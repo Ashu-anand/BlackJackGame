@@ -2,13 +2,12 @@ import random as r
 from os import system
 import time
 
+suits = {'S': '\u2660',
+         'C': '\u2663',
+         'H': '\u2665',
+         'D': '\u2666'}
 
 class Cards:
-    suits = {'S': '\u2660',
-             'C': '\u2663',
-             'H': '\u2665',
-             'D': '\u2666'}
-
     def __init__(self,nod):
         card_num = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'A', 'J', 'Q', 'K']
         suits = ['S', 'C', 'H', 'D']
@@ -19,10 +18,6 @@ class Cards:
     def reshuffle_deck(self, current_hand):
         #self.__init__ (self)
         pass
-
-    def print_card(self, card_suit):
-        pass
-
 
 class Hands:
     def __init__(self, is_dealer=False):
@@ -37,26 +32,62 @@ class Hands:
         else:
             self.value = self.value + 10
 
+    def print_card(self, card_suit,pos=1):
+        s = ""
+        for idx in card_suit:
+            s = s + "\t ________"
+        print (s.rjust (pos))
+        s = ""
+        for idx, jdx in card_suit:
+            if jdx == 10:
+                s = s + "\t| {0}     |".format (jdx)
+            else:
+                s = s + "\t| {0}      |".format (jdx)
+        print (s.rjust (pos))
+        s = ""
+        for idx, jdx in card_suit:
+            s = s + "\t|        |"
+        print (s.rjust (pos))
+        s = ""
+        for idx, jdx in card_suit:
+            s = s + "\t|   {0}    |".format (suits[idx])
+        print (s.rjust (pos))
+        s = ""
+        for idx, jdx in card_suit:
+            s = s + "\t|        |"
+        print (s.rjust (pos))
+        s = ""
+        for idx, jdx in card_suit:
+            if jdx == 10:
+                s = s + "\t|     {0} |".format (jdx)
+            else:
+                s = s + "\t|      {0} |".format (jdx)
+        print (s.rjust (pos))
+        s = ""
+        for idx, jdx in card_suit:
+            s = s + "\t|________|"
+        print (s.rjust (pos))
+
+
     def show_card(self, hide=False):
         if self.dealer_hand:
-            print ('Dealer'.rjust (60))
             if hide:
-                print ('[X,{0}] ({1})'.format (self.cards[1], self.value).rjust (60))
+                print ('Dealer'.rjust (60))
+                self.print_card ([self.cards[0]])
             else:
-                print ('{0} ({1})'.format (self.cards, self.value).rjust (60))
+                print ('Dealer (Total: {0})'.format (self.value).rjust (60))
+                self.print_card (self.cards)
             for idx in range (4): print ('')
         else:
-            print ('{0}'.format (self.cards).rjust (100))
-            print ('Total: ({0})'.format (self.value).rjust (100))
+            print ('Player (Total: {0})'.format (self.value).rjust (60))
+            self.print_card(self.cards)
 
 
 def clear_screen():
     system ('cls')
 
-
 def delay(t=0):
     time.sleep (t)
-
 
 clear_screen ()
 print ('Welcome to Black Jack'.rjust (70))
@@ -99,8 +130,6 @@ while play in ("Y", "y"):
             if player.value > 21:
                 print ('You Lost!! You have total of {0} for cards in {1}'.format (player.value, player.cards))
                 break
-            else:
-                print ('You have total of {0} for cards in {1}'.format (player.value, player.cards))
         except:
             print ('Please enter correct number')
             response = 0
@@ -110,9 +139,9 @@ while play in ("Y", "y"):
         dealer.show_card (False)
         player.show_card ()
         print ('')
-        print ('Dealer has total of {0} for cards in {1}. Dealer Turn to Pick the card'.format (dealer.value,
-                                                                                                dealer.cards))
-        input ('Press any key to continue..')
+        print ('Dealer cards total is {0}. Dealer Turn to Pick the card'.format (dealer.value))
+        print()
+        input ('Press any key to continue...')
         print ('')
         dealer.add_card (card.deck.pop ())
     system ('cls')
@@ -126,10 +155,10 @@ while play in ("Y", "y"):
         print (
             'You has {0} and Dealer have {1}. You WON!!'.format (player.value, dealer.value))
     elif dealer.value > player.value:
-        print ('Dealer has total of {0} for cards in {1}. Dealer Won!!'.format (dealer.value, dealer.cards))
+        print ('Dealer has total of {0} for cards. Dealer Won!!'.format (dealer.value))
     elif player.value > dealer.value:
-        print ('You has total of {0} for cards in {1}. Dealer has total of {2} for cards in {3}. You Won!!' \
-               .format (player.value, player.cards, dealer.value, dealer.cards))
+        print ('You has total of {0} for cards. Dealer has total of {2} for cards. You Won!!' \
+               .format (player.value, dealer.value))
     else:
         print ('Both you have dealer have same total. It''s a Tie.')
     print ('')
