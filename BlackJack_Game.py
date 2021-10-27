@@ -157,7 +157,7 @@ while play in ("Y", "y"):
     elif dealer.value > player.value:
         print ('Dealer has total of {0} for cards. Dealer Won!!'.format (dealer.value))
     elif player.value > dealer.value:
-        print ('You has total of {0} for cards. Dealer has total of {2} for cards. You Won!!' \
+        print ('You has total of {0} for cards. Dealer has total of {1} for cards. You Won!!' \
                .format (player.value, dealer.value))
     else:
         print ('Both you have dealer have same total. It''s a Tie.')
