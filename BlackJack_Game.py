@@ -1,34 +1,62 @@
 import random as r
-from os import system, name
+from os import system
 import time
 
+
+class Cards:
+    suits = {'S': '\u2660',
+             'C': '\u2663',
+             'H': '\u2665',
+             'D': '\u2666'}
+
+    def __init__(self,nod):
+        card_num = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'A', 'J', 'Q', 'K']
+        suits = ['S', 'C', 'H', 'D']
+        self.deck = ([(idx, jdx) for idx in suits for jdx in card_num])
+        self.deck=self.deck*nod
+        r.shuffle (self.deck)
+
+    def reshuffle_deck(self, current_hand):
+        #self.__init__ (self)
+        pass
+
+    def print_card(self, card_suit):
+        pass
+
+
 class Hands:
-    def __init__(self,is_dealer=False):
-        self.dealer_hand=is_dealer
+    def __init__(self, is_dealer=False):
+        self.dealer_hand = is_dealer
         self.cards = []
         self.value = 0
 
     def add_card(self, card):
         self.cards.append (card)
-        self.value = sum (self.cards)
+        if type (card[1]) == int:
+            self.value = self.value + card[1]
+        else:
+            self.value = self.value + 10
 
     def show_card(self, hide=False):
         if self.dealer_hand:
             print ('Dealer'.rjust (60))
             if hide:
-                print ('[X,{0}] ({1})'.format (self.cards[1], self.cards[1]).rjust (60))
+                print ('[X,{0}] ({1})'.format (self.cards[1], self.value).rjust (60))
             else:
                 print ('{0} ({1})'.format (self.cards, self.value).rjust (60))
-            for idx in range(4): print('')
+            for idx in range (4): print ('')
         else:
             print ('{0}'.format (self.cards).rjust (100))
-            print ('You ({0})'.format (self.value).rjust (100))
+            print ('Total: ({0})'.format (self.value).rjust (100))
+
 
 def clear_screen():
     system ('cls')
 
+
 def delay(t=0):
     time.sleep (t)
+
 
 clear_screen ()
 print ('Welcome to Black Jack'.rjust (70))
@@ -41,10 +69,7 @@ clear_screen ()
 while num_of_decks not in range (1, 5):
     num_of_decks = int (input ("Invalid Selection. Please from number 1 to 4: "))
 
-cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
-cards = cards * 4 * num_of_decks
-r.shuffle (cards)
-
+card = Cards (num_of_decks)
 print ("")
 """
 Setting the game to start from here. This game will continue till the time
@@ -53,12 +78,11 @@ player select N for playing further.
 
 play = 'Y'
 while play in ("Y", "y"):
-    print("Number of cards {0}".format(len(cards)))
     dealer = Hands (True)
     player = Hands ()
     for idx in range (2):
-        player.add_card (cards.pop ())
-        dealer.add_card (cards.pop ())
+        player.add_card (card.deck.pop ())
+        dealer.add_card (card.deck.pop ())
     dealer.show_card (True)
     player.show_card ()
 
@@ -68,7 +92,7 @@ while play in ("Y", "y"):
         try:
             response = int (input ('Do you want to Stay (1) or hit(2)?: '))
             if response == 2:
-                player.add_card (cards.pop ())
+                player.add_card (card.deck.pop ())
             system ('cls')
             dealer.show_card (True)
             player.show_card ()
@@ -86,10 +110,11 @@ while play in ("Y", "y"):
         dealer.show_card (False)
         player.show_card ()
         print ('')
-        print ('Dealer has total of {0} for cards in {1}. Dealer Turn to Pick the card'.format (dealer.value, dealer.cards))
+        print ('Dealer has total of {0} for cards in {1}. Dealer Turn to Pick the card'.format (dealer.value,
+                                                                                                dealer.cards))
         input ('Press any key to continue..')
         print ('')
-        dealer.add_card (cards.pop ())
+        dealer.add_card (card.deck.pop ())
     system ('cls')
     dealer.show_card (False)
     player.show_card ()
