@@ -7,17 +7,19 @@ suits = {'S': '\u2660',
          'H': '\u2665',
          'D': '\u2666'}
 
+
 class Cards:
-    def __init__(self,nod):
+    def __init__(self, nod):
         card_num = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'A', 'J', 'Q', 'K']
         suits = ['S', 'C', 'H', 'D']
         self.deck = ([(idx, jdx) for idx in suits for jdx in card_num])
-        self.deck=self.deck*nod
+        self.deck = self.deck * nod
         r.shuffle (self.deck)
 
-    def reshuffle_deck(self, current_hand):
-        #self.__init__ (self)
-        pass
+    def reshuffle_deck(self):
+        input ("Deck about to finish. Reshuffling deck. Press any key to continue..")
+        self.__init__ (self)
+
 
 class Hands:
     def __init__(self, is_dealer=False):
@@ -32,7 +34,7 @@ class Hands:
         else:
             self.value = self.value + 10
 
-    def print_card(self, card_suit,pos=1):
+    def print_card(self, card_suit, pos=1):
         s = ""
         for idx in card_suit:
             s = s + "\t ________"
@@ -68,7 +70,6 @@ class Hands:
             s = s + "\t|________|"
         print (s.rjust (pos))
 
-
     def show_card(self, hide=False):
         if self.dealer_hand:
             if hide:
@@ -80,14 +81,16 @@ class Hands:
             for idx in range (4): print ('')
         else:
             print ('Player (Total: {0})'.format (self.value).rjust (60))
-            self.print_card(self.cards)
+            self.print_card (self.cards)
 
 
 def clear_screen():
     system ('cls')
 
+
 def delay(t=0):
     time.sleep (t)
+
 
 clear_screen ()
 print ('Welcome to Black Jack'.rjust (70))
@@ -109,6 +112,8 @@ player select N for playing further.
 
 play = 'Y'
 while play in ("Y", "y"):
+    if len (card.deck) <= 7:
+        card.reshuffle_deck ()
     dealer = Hands (True)
     player = Hands ()
     for idx in range (2):
@@ -140,7 +145,7 @@ while play in ("Y", "y"):
         player.show_card ()
         print ('')
         print ('Dealer cards total is {0}. Dealer Turn to Pick the card'.format (dealer.value))
-        print()
+        print ()
         input ('Press any key to continue...')
         print ('')
         dealer.add_card (card.deck.pop ())
