@@ -26,10 +26,17 @@ class Hands:
         self.dealer_hand = is_dealer
         self.cards = []
         self.value = 0
+        self.ace=True
 
     def add_card(self, card):
         self.cards.append (card)
-        if type (card[1]) == int:
+        if card[1]=='A':
+            if self.ace and (self.value + 11 <= 21):
+               self.value = self.value + 11
+               self.ace=False
+            else:
+               self.value = self.value + 1
+        elif type (card[1]) == int:
             self.value = self.value + card[1]
         else:
             self.value = self.value + 10
