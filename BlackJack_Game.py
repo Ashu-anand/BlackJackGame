@@ -132,7 +132,10 @@ while play in ("Y", "y"):
             system ('cls')
             dealer.show_card (True)
             player.show_card ()
-            if player.value > 21:
+            if player.value == 21:
+                input('Your Total is 21. Stay at 21. Dealer Turn. Press any key to continue')
+                break
+            elif player.value > 21:
                 print ('You Lost!! You have total of {0} for cards in {1}'.format (player.value, player.cards))
                 break
         except:
