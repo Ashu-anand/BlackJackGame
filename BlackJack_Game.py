@@ -16,9 +16,9 @@ class Cards:
         self.deck = self.deck * nod
         r.shuffle (self.deck)
 
-    def reshuffle_deck(self):
+    def reshuffle_deck(self,nod):
         input ("Deck about to finish. Reshuffling deck. Press any key to continue..")
-        self.__init__ (self)
+        self.__init__ (nod)
 
 
 class Hands:
@@ -26,20 +26,25 @@ class Hands:
         self.dealer_hand = is_dealer
         self.cards = []
         self.value = 0
-        self.ace=True
+        self.ace=False
 
     def add_card(self, card):
         self.cards.append (card)
         if card[1]=='A':
-            if self.ace and (self.value + 11 <= 21):
+            if not self.ace and (self.value + 11 <= 21):
                self.value = self.value + 11
-               self.ace=False
+               self.ace=True
             else:
                self.value = self.value + 1
-        elif type (card[1]) == int:
-            self.value = self.value + card[1]
         else:
-            self.value = self.value + 10
+            if type (card[1]) == int:
+                self.value = self.value + card[1]
+            else:
+                self.value = self.value + 10
+            if self.value>21 and self.ace:
+                self.value -= 10
+                self.ace=False
+
 
     def print_card(self, card_suit, pos=1):
         s = ""
@@ -119,8 +124,8 @@ player select N for playing further.
 
 play = 'Y'
 while play in ("Y", "y"):
-    if len (card.deck) <= 7:
-        card.reshuffle_deck ()
+    if len (card.deck) <= 37:
+        card.reshuffle_deck (num_of_decks)
     dealer = Hands (True)
     player = Hands ()
     for idx in range (2):
