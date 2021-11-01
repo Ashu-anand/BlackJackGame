@@ -1,7 +1,7 @@
 import random as r
 from os import system
-import time
 
+global num_of_decks
 suits = {'S': '\u2660',
          'C': '\u2663',
          'H': '\u2665',
@@ -16,35 +16,42 @@ class Cards:
         self.deck = self.deck * nod
         r.shuffle (self.deck)
 
-    def reshuffle_deck(self,nod):
+    def reshuffle_deck(self, nod):
         input ("Deck about to finish. Reshuffling deck. Press any key to continue..")
         self.__init__ (nod)
 
 
 class Hands:
-    def __init__(self, is_dealer=False):
+    def __init__(self, player_onhand=pow (2, 25), is_dealer=False):
         self.dealer_hand = is_dealer
         self.cards = []
         self.value = 0
-        self.ace=False
+        self.ace = False
+        self.player_current_balance = player_onhand
+        self.bet = 0
+
+    def win_bet(self):
+        self.player_current_balance += self.bet
+
+    def lose_bet(self):
+        self.player_current_balance -= self.bet
 
     def add_card(self, card):
         self.cards.append (card)
-        if card[1]=='A':
+        if card[1] == 'A':
             if not self.ace and (self.value + 11 <= 21):
-               self.value = self.value + 11
-               self.ace=True
+                self.value = self.value + 11
+                self.ace = True
             else:
-               self.value = self.value + 1
+                self.value = self.value + 1
         else:
             if type (card[1]) == int:
                 self.value = self.value + card[1]
             else:
                 self.value = self.value + 10
-            if self.value>21 and self.ace:
+            if self.value > 21 and self.ace:
                 self.value -= 10
-                self.ace=False
-
+                self.ace = False
 
     def print_card(self, card_suit, pos=1):
         s = ""
@@ -94,40 +101,62 @@ class Hands:
         else:
             print ('Player (Total: {0})'.format (self.value).rjust (60))
             self.print_card (self.cards)
+            print ('Bet Amount: {0}'.format (self.bet).rjust (60))
 
 
 def clear_screen():
     system ('cls')
 
 
-def delay(t=0):
-    time.sleep (t)
+def validate_number(p_text):
+    while True:
+        try:
+            p_num = int (input (p_text))
+        except ValueError:
+            print ("Sorry, please enter a number")
+        else:
+            return p_num
 
 
-clear_screen ()
+def take_bet(player_hand):
+    while True:
+        try:
+            player_hand.bet = int (input ('How many chips you want to bet: '))
+        except ValueError:
+            print ("Sorry, please enter a number")
+        else:
+            if player_hand.bet > player_hand.player_current_balance:
+                print ("Sorry, you cannot bet more than {0}".format (player_hand.player_current_balance))
+            else:
+                break
+
+
+def select_play_deck():
+    global num_of_decks
+    print ("How may decks you want to play with \n")
+    num_of_decks = validate_number ("Choose from number 1 to 4: ")
+    while num_of_decks not in range (1, 5):
+        clear_screen ()
+        num_of_decks = int (input ("Invalid Selection. Please select from number 1 to 4: "))
+    clear_screen ()
+
+
 print ('Welcome to Black Jack'.rjust (70))
-delay ()
-print ("How may decks you want to play with ")
-delay ()
-num_of_decks = int (input ("Choose from number 1 to 4: "))
-clear_screen ()
-
-while num_of_decks not in range (1, 5):
-    num_of_decks = int (input ("Invalid Selection. Please from number 1 to 4: "))
-
+select_play_deck ()
 card = Cards (num_of_decks)
-print ("")
 """
 Setting the game to start from here. This game will continue till the time
 player select N for playing further.
 """
-
+player_opening_balance = 100
 play = 'Y'
 while play in ("Y", "y"):
-    if len (card.deck) <= 37:
+    dealer = Hands (is_dealer=True)
+    player = Hands (player_opening_balance)
+    take_bet (player)
+
+    if len (card.deck) <= 7:
         card.reshuffle_deck (num_of_decks)
-    dealer = Hands (True)
-    player = Hands ()
     for idx in range (2):
         player.add_card (card.deck.pop ())
         dealer.add_card (card.deck.pop ())
@@ -145,46 +174,52 @@ while play in ("Y", "y"):
             dealer.show_card (True)
             player.show_card ()
             if player.value == 21:
-                input('Your Total is 21. Stay at 21. Dealer Turn. Press any key to continue')
+                input ('Your Total is 21. Stay at 21. Dealer Turn. Press any key to continue')
                 break
             elif player.value > 21:
-                print ('You Lost!! You have total of {0} for cards in {1}'.format (player.value, player.cards))
                 break
         except:
             print ('Please enter correct number')
             response = 0
-
     while dealer.value < 17 and player.value < 22:
         system ('cls')
         dealer.show_card (False)
         player.show_card ()
         print ('')
-        print ('Dealer cards total is {0}. Dealer Turn to Pick the card'.format (dealer.value))
-        print ()
+        print ('Dealer cards total is {0}. Dealer Turn to Pick the card \n'.format (dealer.value))
         input ('Press any key to continue...')
-        print ('')
         dealer.add_card (card.deck.pop ())
     system ('cls')
     dealer.show_card (False)
     player.show_card ()
 
+
     if player.value > 21:
+        player.lose_bet ()
         print ('Dealer has {0} and You have {1}. Dealer WON!!'.format (dealer.value,
                                                                        player.value))
     elif dealer.value > 21:
+        player.win_bet ()
         print (
             'You has {0} and Dealer have {1}. You WON!!'.format (player.value, dealer.value))
     elif dealer.value > player.value:
+        player.lose_bet ()
         print ('Dealer has total of {0} for cards. Dealer Won!!'.format (dealer.value))
     elif player.value > dealer.value:
+        player.win_bet ()
         print ('You has total of {0} for cards. Dealer has total of {1} for cards. You Won!!' \
                .format (player.value, dealer.value))
     else:
         print ('Both you have dealer have same total. It''s a Tie.')
     print ('')
-
-    play = input ('Do You want to play More. Yes (Y) or No (N)')
+    player_opening_balance = player.player_current_balance
+    print ("You have {0} chips in hand. \n".format (player_opening_balance))
+    if player_opening_balance == 0:
+        input ()
+        play = 'N'
+    else:
+        play = input ('Do You want to play More. Yes (Y) or No (N)')
     clear_screen ()
 else:
-    print ("Thanks for playing with us")
+    print ("Thanks for playing with us. You have {0} chips in hand. \n".format (player_opening_balance))
     input ("Press any key to exist...")
