@@ -7,7 +7,6 @@ suits = {'S': '\u2660',
          'H': '\u2665',
          'D': '\u2666'}
 
-
 class Cards:
     def __init__(self, nod):
         card_num = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'A', 'J', 'Q', 'K']
@@ -55,7 +54,7 @@ class Hands:
 
     def print_card(self, card_suit, pos=1):
         s = ""
-        for idx in card_suit:
+        for _ in card_suit:
             s = s + "\t ________"
         print (s.rjust (pos))
         s = ""
@@ -66,7 +65,7 @@ class Hands:
                 s = s + "\t| {0}      |".format (jdx)
         print (s.rjust (pos))
         s = ""
-        for idx, jdx in card_suit:
+        for _ in card_suit:
             s = s + "\t|        |"
         print (s.rjust (pos))
         s = ""
@@ -74,7 +73,7 @@ class Hands:
             s = s + "\t|   {0}    |".format (suits[idx])
         print (s.rjust (pos))
         s = ""
-        for idx, jdx in card_suit:
+        for _ in card_suit:
             s = s + "\t|        |"
         print (s.rjust (pos))
         s = ""
@@ -85,7 +84,7 @@ class Hands:
                 s = s + "\t|      {0} |".format (jdx)
         print (s.rjust (pos))
         s = ""
-        for idx, jdx in card_suit:
+        for _ in card_suit:
             s = s + "\t|________|"
         print (s.rjust (pos))
 
@@ -120,15 +119,12 @@ def validate_number(p_text):
 
 def take_bet(player_hand):
     while True:
-        try:
-            player_hand.bet = int (input ('How many chips you want to bet: '))
-        except ValueError:
-            print ("Sorry, please enter a number")
+        player_hand.bet =validate_number('How many chips you want to bet: ')
+        if player_hand.bet > player_hand.player_current_balance:
+            print ("Sorry, you cannot bet more than {0}".format (player_hand.player_current_balance))
         else:
-            if player_hand.bet > player_hand.player_current_balance:
-                print ("Sorry, you cannot bet more than {0}".format (player_hand.player_current_balance))
-            else:
-                break
+            clear_screen ()
+            break
 
 
 def select_play_deck():
